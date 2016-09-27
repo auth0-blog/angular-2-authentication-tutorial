@@ -1,0 +1,29 @@
+<h3 class="text-center">Special (Private) Deals</h3>
+
+<div class="col-sm-4" *ngFor="let deal of privateDeals">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{deal.name}}</h3>
+    </div>
+    <div class="panel-body">
+      {{deal.description}}
+    </div>
+    <div class="panel-footer">
+      <ul class="list-inline">
+        <li>Original</li>
+        <li class="pull-right">Sale</li>
+      </ul>
+      <ul class="list-inline">
+        <li><a class="btn btn-danger">${{deal.originalPrice | number}}</a></li>
+        <li class="pull-right"><a class="btn btn-success" (click)="purchase(deal)">${{deal.salePrice | number}}</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="col-sm-12">
+  <div class="jumbotron text-center">
+    <h2>View Public Deals</h2>
+    <a class="btn btn-lg btn-success" routerLink="/deals">Public Deals</a>
+  </div>
+</div>
