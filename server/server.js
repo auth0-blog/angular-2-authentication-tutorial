@@ -3,6 +3,7 @@
 const express = require('express');
 const app = express();
 const jwt = require('express-jwt');
+const jwks = require('jwks-rsa');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
@@ -11,8 +12,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 const authCheck = jwt({
-  secret: new Buffer('YOUR-AUTH0-CLIENT-SECRET', 'base64'),
-  audience: 'YOUR-AUTH0-CLIENT-ID'
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: "https://{YOUR-AUTH0-DOMAIN}.auth0.com/.well-known/jwks.json"
+    }),
+    audience: '{YOUR-AUTH0-API-IDENTIFIER}',
+    issuer: "https://{YOUR-AUTH0-DOMAIN}.auth0.com/",
+    algorithms: ['RS256']
 });
 
 app.get('/api/deals/public', (req, res)=>{

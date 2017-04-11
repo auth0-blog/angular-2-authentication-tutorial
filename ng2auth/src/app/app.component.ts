@@ -19,7 +19,7 @@ import { AuthService } from './auth.service';
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li>
-            <a (click)=authService.login() *ngIf="!authService.loggedIn()">Log In</a>
+            <a *ngIf="!authService.loggedIn()" href="https://{YOUR-AUTH0-DOMAIN}.auth0.com/authorize?scope={SCOPES}&audience={YOUR-AUTH0-API-IDENTIFIER}&response_type=id_token%20token&client_id={YOUR-AUTH0-CLIENT-ID}&redirect_uri={YOUR-AUTH0-REDIRECT-URI}&nonce={{nonce}}">Log In</a>
           </li>
           <li>
             <a (click)=authService.logout() *ngIf="authService.loggedIn()">Log Out</a>
@@ -34,8 +34,10 @@ import { AuthService } from './auth.service';
   styles : ['.navbar-right { margin-right: 0px !important}']
 })
 export class AppComponent {
-
   title = 'Daily Deals';
+  nonce: string;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) {
+    this.nonce = this.authService.generateNonce();
+  }
 }

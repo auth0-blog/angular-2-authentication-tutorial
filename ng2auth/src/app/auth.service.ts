@@ -1,39 +1,64 @@
 import { Injectable } from '@angular/core';
-import { tokenNotExpired } from 'angular2-jwt';
+import { tokenNotExpired, JwtHelper } from 'angular2-jwt';
 import { Router } from '@angular/router';
 
-declare var Auth0Lock: any;
 
 @Injectable()
 export class AuthService {
 
-  lock = new Auth0Lock('YOUR-AUTH0-CLIENT-ID', 'YOUR-AUTH0-DOMAIN.auth0.com');
-
   constructor(private router: Router) {
-    this.lock.on('authenticated', (authResult: any) => {
-      localStorage.setItem('id_token', authResult.idToken);
-
-      this.lock.getProfile(authResult.idToken, (error: any, profile: any) => {
-        if (error) {
-          console.log(error);
-        }
-
-        localStorage.setItem('profile', JSON.stringify(profile));
-      });
-
-      this.lock.hide();
-    });
   }
 
-  login() {
-    this.lock.show();
+  getParameterByName(name) {
+    let match = RegExp('[#&]' + name + '=([^&]*)').exec(window.location.hash);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+  }
+
+  getAccessToken() {
+    let accessToken = this.getParameterByName('access_token');
+    localStorage.setItem('access_token', accessToken);
+  }
+
+  getIdToken() {
+    let idToken = this.getParameterByName('id_token');
+    localStorage.setItem('id_token', idToken);
+    this.decodeIdToken(idToken);
+  }
+
+  decodeIdToken(token) {
+    let jwtHelper = new JwtHelper();
+    let jwt = jwtHelper.decodeToken(token);
+    this.verifyNonce(jwt.nonce);
+  }
+
+  generateNonce() {
+    let existing = localStorage.getItem('nonce');
+    if (existing === null) {
+      let nonce = '';
+      let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      for (let i = 0; i < 16; i++) {
+          nonce += possible.charAt(Math.floor(Math.random() * possible.length));
+      }
+      localStorage.setItem('nonce', nonce);
+      return nonce;
+    }
+    return localStorage.getItem('nonce');
+  }
+
+  verifyNonce(nonce) {
+    // If nonce does not match we'll log the user out
+    if (nonce !== localStorage.getItem('nonce')) {
+      localStorage.removeItem('id_token');
+      localStorage.removeItem('access_token');
+    }
+    this.router.navigateByUrl('/deals');
   }
 
   logout() {
     // To log out, just remove the token and profile
     // from local storage
-    localStorage.removeItem('profile');
     localStorage.removeItem('id_token');
+    localStorage.removeItem('access_token');
 
     // Send the user back to the dashboard after logout
     this.router.navigateByUrl('/deals');

@@ -16,7 +16,7 @@ export class DealService {
     return this.http
       .get(this.publicDealsUrl)
       .toPromise()
-      .then(response=>response.json() as Deal[])
+      .then(response => response.json() as Deal[])
       .catch(this.handleError);
   }
 
@@ -24,7 +24,7 @@ export class DealService {
     return this.authHttp
       .get(this.privateDealsUrl)
       .toPromise()
-      .then(response=>response.json() as Deal[])
+      .then(response => response.json() as Deal[])
       .catch(this.handleError);
   }
 
