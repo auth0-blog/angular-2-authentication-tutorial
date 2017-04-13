@@ -16,7 +16,7 @@ export class AuthService {
 
   getAccessToken() {
     let accessToken = this.getParameterByName('access_token');
-    localStorage.setItem('access_token', accessToken);
+    localStorage.setItem('token', accessToken);
   }
 
   getIdToken() {
@@ -49,7 +49,7 @@ export class AuthService {
     // If nonce does not match we'll log the user out
     if (nonce !== localStorage.getItem('nonce')) {
       localStorage.removeItem('id_token');
-      localStorage.removeItem('access_token');
+      localStorage.removeItem('token');
     }
     this.router.navigateByUrl('/deals');
   }
@@ -58,7 +58,7 @@ export class AuthService {
     // To log out, just remove the token and profile
     // from local storage
     localStorage.removeItem('id_token');
-    localStorage.removeItem('access_token');
+    localStorage.removeItem('token');
 
     // Send the user back to the dashboard after logout
     this.router.navigateByUrl('/deals');
