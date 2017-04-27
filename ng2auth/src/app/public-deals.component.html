@@ -21,13 +21,13 @@
   </div>
 </div>
 
-<div class="col-sm-12" *ngIf="!authService.loggedIn()">
+<div class="col-sm-12" *ngIf="!authService.authenticated">
   <div class="jumbotron text-center">
     <h2>Get More Deals By Logging In</h2>
   </div>
 </div>
 
-<div class="col-sm-12" *ngIf="authService.loggedIn()">
+<div class="col-sm-12" *ngIf="authService.authenticated">
   <div class="jumbotron text-center">
     <h2>View Private Deals</h2>
     <a class="btn btn-lg btn-success" routerLink="/special">Private Deals</a>

@@ -7,7 +7,6 @@ import { AuthService } from './auth.service';
 export class CallbackComponent {
 
   constructor(private authService: AuthService) {
-      this.authService.getIdToken();
-      this.authService.getAccessToken();
-     }
+      this.authService.handleAuth();
+  }
 }

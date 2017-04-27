@@ -1,70 +1,90 @@
 import { Injectable } from '@angular/core';
-import { tokenNotExpired, JwtHelper } from 'angular2-jwt';
 import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { AUTH_CONFIG } from './auth0-variables';
+import { tokenNotExpired } from 'angular2-jwt';
 
+// Avoid name not found warnings
+declare var auth0: any;
 
 @Injectable()
 export class AuthService {
+  // Create Auth0 web auth instance
+  // @TODO: Update AUTH_CONFIG and remove .example extension in src/app/auth/auth0-variables.ts.example
+  auth0 = new auth0.WebAuth({
+    clientID: AUTH_CONFIG.CLIENT_ID,
+    domain: AUTH_CONFIG.CLIENT_DOMAIN
+  });
+
+  // Create a stream of logged in status to communicate throughout app
+  loggedIn: boolean;
+  loggedIn$ = new BehaviorSubject<boolean>(this.loggedIn);
 
   constructor(private router: Router) {
+    // If authenticated, set local profile property and update login status subject
+    if (this.authenticated) {
+      this.setLoggedIn(true);
+    }
   }
 
-  getParameterByName(name) {
-    let match = RegExp('[#&]' + name + '=([^&]*)').exec(window.location.hash);
-    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+  setLoggedIn(value: boolean) {
+    // Update login status subject
+    this.loggedIn$.next(value);
+    this.loggedIn = value;
   }
 
-  getAccessToken() {
-    let accessToken = this.getParameterByName('access_token');
-    localStorage.setItem('token', accessToken);
+  login() {
+    // Auth0 authorize request
+    // Note: nonce is automatically generated: https://auth0.com/docs/libraries/auth0js/v8#using-nonce
+    this.auth0.authorize({
+      responseType: 'token id_token',
+      redirectUri: AUTH_CONFIG.REDIRECT,
+      audience: AUTH_CONFIG.AUDIENCE,
+      scope: AUTH_CONFIG.SCOPE
+    });
   }
 
-  getIdToken() {
-    let idToken = this.getParameterByName('id_token');
-    localStorage.setItem('id_token', idToken);
-    this.decodeIdToken(idToken);
-  }
-
-  decodeIdToken(token) {
-    let jwtHelper = new JwtHelper();
-    let jwt = jwtHelper.decodeToken(token);
-    this.verifyNonce(jwt.nonce);
-  }
-
-  generateNonce() {
-    let existing = localStorage.getItem('nonce');
-    if (existing === null) {
-      let nonce = '';
-      let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      for (let i = 0; i < 16; i++) {
-          nonce += possible.charAt(Math.floor(Math.random() * possible.length));
+  handleAuth() {
+    // When Auth0 hash parsed, get profile
+    this.auth0.parseHash((err, authResult) => {
+      if (authResult && authResult.accessToken && authResult.idToken) {
+        window.location.hash = '';
+        this._getProfile(authResult);
+        this.router.navigate(['/']);
+      } else if (err) {
+        this.router.navigate(['/']);
+        console.error(`Error: ${err.error}`);
       }
-      localStorage.setItem('nonce', nonce);
-      return nonce;
-    }
-    return localStorage.getItem('nonce');
+    });
   }
 
-  verifyNonce(nonce) {
-    // If nonce does not match we'll log the user out
-    if (nonce !== localStorage.getItem('nonce')) {
-      localStorage.removeItem('id_token');
-      localStorage.removeItem('token');
-    }
-    this.router.navigateByUrl('/deals');
+  private _getProfile(authResult) {
+    // Use access token to retrieve user's profile and set session
+    this.auth0.client.userInfo(authResult.accessToken, (err, profile) => {
+      this._setSession(authResult, profile);
+    });
+  }
+
+  private _setSession(authResult, profile) {
+    // Save session data and update login status subject
+    localStorage.setItem('token', authResult.accessToken);
+    localStorage.setItem('id_token', authResult.idToken);
+    localStorage.setItem('profile', JSON.stringify(profile));
+    this.setLoggedIn(true);
   }
 
   logout() {
-    // To log out, just remove the token and profile
-    // from local storage
-    localStorage.removeItem('id_token');
+    // Remove tokens and profile and update login status subject
     localStorage.removeItem('token');
-
-    // Send the user back to the dashboard after logout
-    this.router.navigateByUrl('/deals');
+    localStorage.removeItem('id_token');
+    localStorage.removeItem('profile');
+    this.router.navigate(['/']);
+    this.setLoggedIn(false);
   }
 
-  loggedIn() {
-    return tokenNotExpired();
+  get authenticated() {
+    // Check if there's an unexpired access token
+    return tokenNotExpired('token');
   }
+
 }
