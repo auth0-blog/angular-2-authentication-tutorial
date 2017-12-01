@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,7 @@ import { Component } from '@angular/core';
             <a *ngIf="!authService.authenticated" (click)="authService.login()">Log In</a>
           </li>
           <li>
-            <a (click)=authService.logout() *ngIf="authService.authenticated">Log Out</a>
+            <a (click)="authService.logout()" *ngIf="authService.authenticated">Log Out</a>
           </li>
         </ul>
       </nav>
@@ -36,4 +37,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Daily Deals';
+
+  constructor(public authService: AuthService) {}
 }
