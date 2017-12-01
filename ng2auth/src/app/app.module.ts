@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { PublicDealsComponent } from './public-deals/public-deals.component';
 import { PrivateDealsComponent } from './private-deals/private-deals.component';
 import { CallbackComponent } from './callback.component';
+import { AuthService } from './auth/auth.service';
 
 
 @NgModule({
@@ -20,7 +21,9 @@ import { CallbackComponent } from './callback.component';
     BrowserModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [
+    AuthService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

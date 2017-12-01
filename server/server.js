@@ -16,10 +16,10 @@ const authCheck = jwt({
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: "https://{YOUR-AUTH0-DOMAIN}.auth0.com/.well-known/jwks.json"
+        jwksUri: "https://kmaida.auth0.com/.well-known/jwks.json" // @TODO: remove domain name
     }),
-    audience: '{YOUR-AUTH0-API-IDENTIFIER}',
-    issuer: "https://{YOUR-AUTH0-DOMAIN}.auth0.com/",
+    audience: 'http://localhost:3001',
+    issuer: "https://kmaida.auth0.com/", // @TODO: remove domain name
     algorithms: ['RS256']
 });
 
