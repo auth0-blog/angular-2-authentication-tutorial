@@ -36,4 +36,8 @@ export class DealService {
     console.error('An error occurred', err);
     return Observable.throw(err.message || err);
   }
+
+  purchase(item) {
+    alert(`You bought the: ${item.name}`);
+  }
 }

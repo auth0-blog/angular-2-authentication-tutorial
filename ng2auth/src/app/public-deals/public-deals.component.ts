@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DealService } from '../deal.service';
 import { AuthService } from '../auth/auth.service';
 import { Subscription } from 'rxjs/Subscription';
-import { Deal } from './../deal';
+import { Deal } from '../deal';
 
 @Component({
   selector: 'app-public-deals',
@@ -12,19 +12,19 @@ import { Deal } from './../deal';
 export class PublicDealsComponent implements OnInit, OnDestroy {
   dealsSub: Subscription;
   publicDeals: Deal[];
+  error: any;
 
   constructor(
-    private dealService: DealService,
+    public dealService: DealService,
     private authService: AuthService) { }
 
   ngOnInit() {
-    this.dealsSub = this.dealService.getPublicDeals().subscribe(
-      deals => this.publicDeals = deals
-    );
-  }
-
-  purchase(item) {
-    alert(`You bought the: ${item.name}`);
+    this.dealsSub = this.dealService
+      .getPublicDeals()
+      .subscribe(
+        deals => this.publicDeals = deals,
+        err => this.error = err
+      );
   }
 
   ngOnDestroy() {
