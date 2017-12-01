@@ -8,6 +8,8 @@ import { PublicDealsComponent } from './public-deals/public-deals.component';
 import { PrivateDealsComponent } from './private-deals/private-deals.component';
 import { CallbackComponent } from './callback.component';
 import { AuthService } from './auth/auth.service';
+import { DealService } from './deal.service';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -19,10 +21,12 @@ import { AuthService } from './auth/auth.service';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [
-    AuthService
+    AuthService,
+    DealService
   ],
   bootstrap: [AppComponent]
 })
