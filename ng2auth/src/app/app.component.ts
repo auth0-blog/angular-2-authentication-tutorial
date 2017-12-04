@@ -7,7 +7,7 @@ import { AuthService } from './auth/auth.service';
     <div class="container">
       <nav class="navbar navbar-default">
         <div class="navbar-header">
-          <a class="navbar-brand" routerLink="/dashboard">{{ title }}</a>
+          <a class="navbar-brand" routerLink="/">{{ title }}</a>
         </div>
         <ul class="nav navbar-nav">
           <li>

@@ -16,7 +16,7 @@ export class PublicDealsComponent implements OnInit, OnDestroy {
 
   constructor(
     public dealService: DealService,
-    private authService: AuthService) { }
+    public authService: AuthService) { }
 
   ngOnInit() {
     this.dealsSub = this.dealService

@@ -27,3 +27,7 @@
     <a class="btn btn-lg btn-success" routerLink="/deals">Public Deals</a>
   </div>
 </div>
+
+<div class="col-sm-12 alert alert-danger" *ngIf="error">
+  <strong>Oops!</strong> An error occurred fetching data. Please try again.
+</div>
