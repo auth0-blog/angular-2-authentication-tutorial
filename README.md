@@ -1,10 +1,10 @@
 # Daily Deals
 
-Daily Deals is an application built with Angular 2 that shows how you can add token based authentication to your Angular 2 applications. 
+Daily Deals is an application built with Angular that shows how you can add token based authentication to your Angular applications. You can read the full tutorial for this project here: [Angular Authentication Tutorial](https://auth0.com/blog/angular-2-authentication/).
 
 # Running the App
 
-You will need to run both the Node.js server located in the `server` directory and Angular 2 front-end located in the `ng2auth` directory. See each of the project directories for detailed instructions on how to run the projects. You will need an Auth0 account, so if you don't already have one, [sign up](https://auth0.com/signup) for a free account today. 
+You will need to run both the Node.js server located in the `server` directory and Angular front-end located in the `ng2auth` directory. See each of the project directories for detailed instructions on how to run the projects. You will need an Auth0 account, so if you don't already have one, [sign up](https://auth0.com/signup) for a free account today. 
 
 ## What is Auth0?
 
@@ -20,7 +20,7 @@ Auth0 helps you to:
 ## Create a free Auth0 account
 
 1. Go to [Auth0](https://auth0.com/signup) and click Sign Up.
-2. Use Google, GitHub or Microsoft Account to login.
+2. Use Google, GitHub or Microsoft Account to log in.
 
 ## Issue Reporting
 
