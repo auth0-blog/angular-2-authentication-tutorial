@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { catchError } from 'rxjs/operators';
+import { AuthService } from './auth/auth.service';
 
 @Injectable()
 export class DealService {
@@ -9,7 +10,10 @@ export class DealService {
   private publicDealsUrl = 'http://localhost:3001/api/deals/public';
   private privateDealsUrl = 'http://localhost:3001/api/deals/private';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) { }
 
   // Implement a method to get the public deals
   getPublicDeals() {
@@ -24,7 +28,7 @@ export class DealService {
   getPrivateDeals() {
     return this.http
       .get(this.privateDealsUrl, {
-        headers: new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`)
+        headers: new HttpHeaders().set('Authorization', `Bearer ${this.authService.accessToken}`)
       })
       .pipe(
         catchError(this.handleError)

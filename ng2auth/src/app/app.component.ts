@@ -14,15 +14,15 @@ import { AuthService } from './auth/auth.service';
             <a routerLink="/deals" routerLinkActive="active">Deals</a>
           </li>
           <li>
-            <a routerLink="/special" *ngIf="authService.authenticated" routerLinkActive="active">Private Deals</a>
+            <a routerLink="/special" *ngIf="authService.isLoggedIn" routerLinkActive="active">Private Deals</a>
           </li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li>
-            <a *ngIf="!authService.authenticated" (click)="authService.login()">Log In</a>
+            <a *ngIf="!authService.isLoggedIn" (click)="authService.login()">Log In</a>
           </li>
           <li>
-            <a (click)="authService.logout()" *ngIf="authService.authenticated">Log Out</a>
+            <a (click)="authService.logout()" *ngIf="authService.isLoggedIn">Log Out</a>
           </li>
         </ul>
       </nav>
