@@ -18,9 +18,6 @@ export class AuthService {
   });
   userProfile: any;
   accessToken: string;
-  // Create a stream of logged in status to communicate throughout app
-  loggedIn: boolean;
-  loggedIn$ = new BehaviorSubject<boolean>(this.loggedIn);
 
   constructor(private router: Router) {
     // If token not expired, renew token and fetch profile
@@ -30,12 +27,6 @@ export class AuthService {
     } else {
       this.logout();
     }
-  }
-
-  private _setLoggedIn(value: boolean) {
-    // Update login status subject
-    this.loggedIn$.next(value);
-    this.loggedIn = value;
   }
 
   login() {
@@ -88,7 +79,6 @@ export class AuthService {
     localStorage.setItem('expires_at', JSON.stringify(expTime));
     this.accessToken = authResult.accessToken;
     this.userProfile = profile;
-    this._setLoggedIn(true);
   }
 
   logout() {
@@ -96,7 +86,6 @@ export class AuthService {
     localStorage.removeItem('expires_at');
     this.userProfile = undefined;
     this.accessToken = undefined;
-    this._setLoggedIn(false);
   }
 
   get isLoggedIn(): boolean {
