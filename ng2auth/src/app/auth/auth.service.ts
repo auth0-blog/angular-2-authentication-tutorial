@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import * as auth0 from 'auth0-js';
 import { environment } from './../../environments/environment';
 import { Router } from '@angular/router';
@@ -7,7 +6,6 @@ import { Router } from '@angular/router';
 @Injectable()
 export class AuthService {
   // Create Auth0 web auth instance
-  // @TODO: Update AUTH_CONFIG and remove .example extension in src/app/auth/auth0-variables.ts.example
   auth0 = new auth0.WebAuth({
     clientID: environment.auth.clientID,
     domain: environment.auth.domain,
@@ -16,17 +14,14 @@ export class AuthService {
     audience: environment.auth.audience,
     scope: environment.auth.scope
   });
+  // Store authentication data
   userProfile: any;
   accessToken: string;
+  authenticated: boolean;
 
   constructor(private router: Router) {
-    // If token not expired, renew token and fetch profile
-    // If token is expired, log out to clear any data
-    if (this.isLoggedIn) {
-      this.getAccessToken();
-    } else {
-      this.logout();
-    }
+    // Check session to restore login if not expired
+    this.getAccessToken();
   }
 
   login() {
@@ -35,13 +30,6 @@ export class AuthService {
   }
 
   handleLoginCallback() {
-    // --Begin URL decoding failsafe to fix bug introduced by Angular v5.2.8
-    // https://github.com/angular/angular/pull/22687
-    const _url = this.router.url;
-    if (_url.indexOf('#') > -1 && _url.indexOf('%3D') > -1) {
-      window.location.hash = decodeURIComponent(_url).split('#')[1];
-    }
-    // --End failsafe overzealous URL encoding bugfix
     // When Auth0 hash parsed, get profile
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken) {
@@ -59,7 +47,9 @@ export class AuthService {
       if (authResult && authResult.accessToken) {
         this.getUserInfo(authResult);
       } else if (err) {
-        console.error(err);
+        console.log(err);
+        this.logout();
+        this.authenticated = false;
       }
     });
   }
@@ -79,19 +69,22 @@ export class AuthService {
     localStorage.setItem('expires_at', JSON.stringify(expTime));
     this.accessToken = authResult.accessToken;
     this.userProfile = profile;
+    this.authenticated = true;
   }
 
   logout() {
-    // Remove tokens and profile and update login status subject
+    // Remove auth data and update login status
     localStorage.removeItem('expires_at');
     this.userProfile = undefined;
     this.accessToken = undefined;
+    this.authenticated = false;
   }
 
   get isLoggedIn(): boolean {
-    // Check if current date is greater than expiration
+    // Check if current date is greater
+    // than expiration and user is logged in
     const expiresAt = JSON.parse(localStorage.getItem('expires_at'));
-    return Date.now() < expiresAt;
+    return Date.now() < expiresAt && this.authenticated;
   }
 
 }
