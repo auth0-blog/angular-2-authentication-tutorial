@@ -21,7 +21,12 @@ export class AuthService {
   accessToken: string;
   authenticated: boolean;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router) {
+    // Check session to restore login if not expired
+    if (Date.now() < JSON.parse(localStorage.getItem('expires_at'))) {
+      this.getAccessToken();
+    }
+  }
 
   login() {
     // Auth0 authorize request
