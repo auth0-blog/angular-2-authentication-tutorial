@@ -3,6 +3,8 @@ import * as auth0 from 'auth0-js';
 import { environment } from './../../environments/environment';
 import { Router } from '@angular/router';
 
+(window as any).global = window;
+
 @Injectable()
 export class AuthService {
   // Create Auth0 web auth instance

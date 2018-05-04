@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { throwError, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import 'rxjs/add/observable/throw';
 import { AuthService } from './auth/auth.service';
+import { Deal } from './deal';
 
 @Injectable()
 export class DealService {
@@ -19,7 +19,7 @@ export class DealService {
   // Implement a method to get the public deals
   getPublicDeals() {
     return this.http
-      .get(this.publicDealsUrl)
+      .get<Deal[]>(this.publicDealsUrl)
       .pipe(
         catchError(this.handleError)
       );
@@ -28,7 +28,7 @@ export class DealService {
   // Implement a method to get the private deals
   getPrivateDeals() {
     return this.http
-      .get(this.privateDealsUrl, {
+      .get<Deal[]>(this.privateDealsUrl, {
         headers: new HttpHeaders().set('Authorization', `Bearer ${this.authService.accessToken}`)
       })
       .pipe(
@@ -39,7 +39,7 @@ export class DealService {
   // Implement a method to handle errors if any
   private handleError(err: HttpErrorResponse | any) {
     console.error('An error occurred', err);
-    return Observable.throw(err.message || err);
+    return throwError(err.message || err);
   }
 
   purchase(item) {

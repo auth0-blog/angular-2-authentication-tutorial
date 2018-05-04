@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DealService } from '../deal.service';
 import { AuthService } from '../auth/auth.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Deal } from '../deal';
 
 @Component({
