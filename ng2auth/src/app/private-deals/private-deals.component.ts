@@ -14,7 +14,10 @@ export class PrivateDealsComponent implements OnInit, OnDestroy {
   privateDeals: Deal[];
   error: any;
 
-  constructor(public dealService: DealService) { }
+  constructor(
+    public dealService: DealService,
+    public authService: AuthService
+  ) { }
 
   ngOnInit() {
     this.dealsSub = this.dealService
