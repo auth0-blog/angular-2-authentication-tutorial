@@ -17,15 +17,13 @@ export class AuthService {
     scope: environment.auth.scope
   });
   // Store authentication data
+  expiresAt: number;
   userProfile: any;
   accessToken: string;
   authenticated: boolean;
 
   constructor(private router: Router) {
-    // Check session to restore login if not expired
-    if (Date.now() < JSON.parse(localStorage.getItem('expires_at'))) {
-      this.getAccessToken();
-    }
+    this.getAccessToken();
   }
 
   login() {
@@ -50,10 +48,6 @@ export class AuthService {
     this.auth0.checkSession({}, (err, authResult) => {
       if (authResult && authResult.accessToken) {
         this.getUserInfo(authResult);
-      } else if (err) {
-        console.log(err);
-        this.logout();
-        this.authenticated = false;
       }
     });
   }
@@ -68,9 +62,8 @@ export class AuthService {
   }
 
   private _setSession(authResult, profile) {
-    const expTime = authResult.expiresIn * 1000 + Date.now();
     // Save authentication data and update login status subject
-    localStorage.setItem('expires_at', JSON.stringify(expTime));
+    this.expiresAt = authResult.expiresIn * 1000 + Date.now();
     this.accessToken = authResult.accessToken;
     this.userProfile = profile;
     this.authenticated = true;
@@ -78,17 +71,20 @@ export class AuthService {
 
   logout() {
     // Remove auth data and update login status
-    localStorage.removeItem('expires_at');
+    this.expiresAt = undefined;
     this.userProfile = undefined;
     this.accessToken = undefined;
     this.authenticated = false;
+    this.auth0.logout({
+      returnTo: 'http://localhost:4200',
+      clientID: environment.auth.clientID
+    });
   }
 
   get isLoggedIn(): boolean {
     // Check if current date is before token
     // expiration and user is signed in locally
-    const expiresAt = JSON.parse(localStorage.getItem('expires_at'));
-    return Date.now() < expiresAt && this.authenticated;
+    return Date.now() < this.expiresAt && this.authenticated;
   }
 
 }
