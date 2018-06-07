@@ -70,11 +70,9 @@ export class AuthService {
   }
 
   logout() {
-    // Remove auth data and update login status
-    this.expiresAt = undefined;
-    this.userProfile = undefined;
-    this.accessToken = undefined;
-    this.authenticated = false;
+    // Log out of Auth0 session
+    // Ensure that returnTo URL is specified in Auth0
+    // Application settings for Allowed Logout URLs
     this.auth0.logout({
       returnTo: 'http://localhost:4200',
       clientID: environment.auth.clientID
@@ -84,7 +82,7 @@ export class AuthService {
   get isLoggedIn(): boolean {
     // Check if current date is before token
     // expiration and user is signed in locally
-    return Date.now() < this.expiresAt && this.authenticated;
+    return (Date.now() < this.expiresAt) && this.authenticated;
   }
 
 }
